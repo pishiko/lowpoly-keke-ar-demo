@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+# Three.js runtime files are deliberately bundled for offline use.
+!node_modules/
+!node_modules/**
