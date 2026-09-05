@@ -1,4 +1,4 @@
-const CACHE = 'keke-pocket-8068a9de02f6';
+const CACHE = 'keke-pocket-8e5216e2393c';
 const ASSETS = [
   './', './index.html', './style.css', './main.js', './manifest.webmanifest',
   './app/motion.js', './app/audio.js', './app/controls.js', './app/camera.js', './app/photos.js', './app/icons.js',

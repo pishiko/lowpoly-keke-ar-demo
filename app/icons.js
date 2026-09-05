@@ -1,4 +1,5 @@
 const paths = {
+  frame: '<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><rect x="8" y="8" width="8" height="8" rx="2"/>',
   volume: '<path d="M11 4 5 9H2v6h3l6 5zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"/>',
   home: '<path d="m4 10 8-7 8 7v10h-6v-6h-4v6H4z"/><path d="M17 3h4v4"/>',
   size: '<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5M4 4l5 5m11 11-5-5"/>',

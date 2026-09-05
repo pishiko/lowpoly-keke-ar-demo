@@ -10,3 +10,63 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}#flash.firing{animation:none}}
 /* Preserve centering during press, so the recall target cannot move away from the pointer. */
 .offscreen:active:not(:disabled){transform:translate(-50%,-50%) translateY(1px)}
+
+/* Recording HUD: applied to the actual WebXR DOM overlay root as well as inline modes. */
+.hud-toggle {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
+  padding: 7px 12px; border: 1px solid var(--line); border-radius: 20px;
+  background: #ffffffa6; font-size: 10px; white-space: nowrap;
+}
+.hud-toggle svg { width: 18px; height: 18px; }
+#hud-tools {
+  position: absolute; top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right)); display: flex; gap: 6px; align-items: center;
+}
+#hud-tools button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 44px; min-height: 44px; padding: 9px 12px; border-radius: 22px;
+  color: white; background: #28312666; font-size: 10px; border: 1px solid #ffffff30;
+}
+#hud-tools svg { width: 18px; height: 18px; }
+#hud-tools #hud-recall { padding: 9px; }
+#overlay:not([data-hud=full]) :is(.topbar, .intro, .scene-meta, .settings, .speech, .stage-caption, .control-note, .actions-heading, .capture-controls, #offscreen, #toast, #flash) {
+  display: none;
+}
+#overlay[data-hud=minimal] .control-deck {
+  left: max(16px, env(safe-area-inset-left)); right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between;
+  align-items: flex-end; gap: 12px; min-height: 0; padding: 0;
+  background: none; border: 0; box-shadow: none; backdrop-filter: none;
+}
+#overlay[data-hud=minimal] #joystick {
+  width: 88px; height: 88px; border: 1px solid #ffffff70;
+  background: #28312630; opacity: .65;
+}
+#overlay[data-hud=minimal] #joystick-knob {
+  width: 40px; height: 40px; top: calc(50% - 20px); left: calc(50% - 20px);
+  background: #ffffff70; box-shadow: none;
+}
+#overlay[data-hud=minimal] .joy-arrow { color: white; }
+#overlay[data-hud=minimal] .actions { width: auto; }
+#overlay[data-hud=minimal] .action-buttons { gap: 4px; }
+#overlay[data-hud=minimal] .action-buttons button {
+  width: 44px; height: 44px; min-width: 44px; padding: 0; flex: none;
+  border-radius: 50%; border: 1px solid #ffffff50; background: #28312655;
+  color: white; opacity: .65;
+}
+#overlay[data-hud=minimal] .action-buttons button > :is(span:not([data-icon]), kbd) { display: none; }
+#overlay[data-hud=minimal] .action-buttons svg { width: 22px; height: 22px; }
+#overlay[data-hud=minimal] :is(#joystick:active, #joystick:focus-visible, .action-buttons button:active, .action-buttons button:focus-visible) { opacity: 1; }
+#overlay[data-hud=minimal] .action-buttons button.active { background: #657547a0; }
+#overlay[data-hud=minimal] #placement { top: auto; bottom: 124px; }
+#overlay[data-hud=minimal] #placement p { font-size: 10px; padding: 10px 14px; }
+#overlay[data-hud=hidden] :is(.control-deck, #hud-hide, #hud-recall, #hud-restore > span:not([data-icon])) { display: none; }
+#overlay[data-hud=hidden] #hud-restore { padding: 9px; opacity: .3; }
+#overlay[data-hud=hidden] #hud-restore:is(:hover, :focus-visible, :active) { opacity: 1; }
+@media (max-width: 700px) {
+  .hud-toggle { min-height: 33px; padding: 6px 9px; font-size: 9px; gap: 5px; }
+}
+@media (max-width: 360px) {
+  .hud-toggle > span:not([data-icon]) { display: none; }
+  .hud-toggle { width: 33px; padding: 6px; justify-content: center; }
+}

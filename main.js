@@ -103,6 +103,35 @@ function playAction(name) {
   } else if (motion.lying && name !== 'squish') toast('「おきる」で起こしてあげてね。', 2200);
 }
 const controls = createControls({ joystick: $('#joystick'), knob: $('#joystick-knob'), onAction: playAction, onInteract: () => audio.unlock() });
+let hudSceneMode = mode;
+function setHud(level, dismissMessages = true) {
+  // Placement must stay accessible until the plush has a real-world position.
+  if (level === 'hidden' && mode === 'ar' && !placed) level = 'minimal';
+  controls.release();
+  if (dismissMessages) {
+    clearTimeout(toastTimer); $('#toast').hidden = true;
+    clearTimeout(speechTimer); $('#speech').classList.remove('visible');
+  }
+  overlay.dataset.hud = level;
+  $('#hud-toggle').setAttribute('aria-pressed', String(level !== 'full'));
+  $('#hud-tools').hidden = level === 'full';
+  $('#hud-hide').disabled = mode === 'ar' && !placed;
+  const focused = document.activeElement;
+  if (focused instanceof HTMLElement && overlay.contains(focused)) focused.blur();
+}
+$('#hud-toggle').addEventListener('click', () => setHud('minimal'));
+$('#hud-hide').addEventListener('click', () => setHud('hidden'));
+$('#hud-restore').addEventListener('click', () => setHud('full'));
+$('#hud-recall').addEventListener('click', recall);
+window.addEventListener('keydown', (event) => {
+  if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName) || document.querySelector('dialog[open]')) return;
+  if (event.code === 'KeyH') {
+    event.preventDefault();
+    setHud({ full: 'minimal', minimal: 'hidden', hidden: 'full' }[overlay.dataset.hud]);
+  } else if (event.code === 'Escape' && overlay.dataset.hud !== 'full') {
+    event.preventDefault(); setHud('full');
+  }
+});
 overlay.addEventListener('pointerdown', () => audio.unlock(), { passive: true });
 for (const button of document.querySelectorAll('[data-action]')) button.addEventListener('click', () => playAction(button.dataset.action));
 $('#sound').addEventListener('click', () => {
@@ -118,6 +147,7 @@ function recall() {
   if (mode === 'ar') {
     placed = false; character.visible = false; $('#placement').hidden = false; $('#place').disabled = true;
     $('#placement-hint').textContent = '置きたい床にスマホを向けてください';
+    if (overlay.dataset.hud !== 'full') setHud('minimal');
   } else { character.position.copy(home); speak('ただいま。'); }
   audio.unlock(); audio.play('recall'); $('#offscreen').hidden = true;
 }
@@ -130,13 +160,15 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 });
 
 function syncMode() {
+  if (hudSceneMode !== mode) { setHud('full', false); hudSceneMode = mode; }
+  $('#hud-hide').disabled = mode === 'ar' && !placed;
   app.dataset.mode = mode; stage.visible = mode === 'studio';
   scene.background = mode === 'studio' ? new THREE.Color(0xeff0e7) : null;
   for (const name of ['studio', 'camera', 'ar']) $(`#${name}-mode`).setAttribute('aria-pressed', String(mode === name));
   $('#mode-label').textContent = { studio: 'STUDIO / おためし', camera: 'CAMERA / カメラ合成', ar: 'AR / 床に置く' }[mode];
   $('#shutter').disabled = !ready || mode === 'ar' || busy;
   $('#flip-camera').disabled = mode !== 'camera' || busy;
-  $('#capture-label').textContent = mode === 'ar' ? '端末のスクショで撮影' : '写真を撮る';
+  $('#capture-label').textContent = mode === 'ar' ? '動画は端末の画面録画で' : '写真を撮る';
   $('#camera-mode').disabled = busy; $('#ar-mode').disabled = busy;
   $('#placement').hidden = mode !== 'ar' || placed;
   if (mode !== 'ar') { character.visible = ready; reticle.visible = false; }
@@ -192,7 +224,7 @@ async function enterAR() {
     const source = await requested.requestHitTestSource({ space: viewerSpace });
     if (session !== requested || epoch !== modeEpoch) { source?.cancel(); return; }
     hitSource = source; mode = 'ar'; placed = false; character.visible = false; controls.release();
-    toast('床に輪が出たら「ここに置く」。撮影は端末のスクリーンショットで。', 7000);
+    toast('床に輪が出たら「ここに置く」。動画は端末の画面録画で。「HUD最小」で操作表示を減らせます。', 7000);
   } catch (error) {
     if (requested) { try { await requested.end(); } catch { /* Already ended. */ } }
     if (epoch === modeEpoch) {
@@ -319,6 +351,9 @@ function animate(timestamp, frame) {
   shadow.material.opacity = Math.max(0.25, 1 - Math.max(0, pose.y - Math.abs(Math.sin(pose.roll)) * 0.34));
   for (const event of motion.drainEvents()) audio.play(event);
   $('#fall-label').textContent = motion.lying ? 'おきる' : 'ころん';
+  const fallButton = document.querySelector('[data-action=fall]');
+  fallButton.setAttribute('aria-label', motion.lying ? 'おきる' : 'ころん');
+  fallButton.title = motion.lying ? 'おきる' : 'ころん';
   const labels = { squish: 'ぷにぷにしています', jump: 'ぴょーん！', fall: 'ころん、とひと休み', getup: 'よいしょ、っと', spin: 'くるり、くるり' };
   $('#state-label').textContent = labels[motion.action] || (motion.lying ? 'ひと休み。おきる？' : walkSpeed > 0.05 ? 'おさんぽしています' : 'のんびりしています');
   for (const button of document.querySelectorAll('[data-action]')) button.classList.toggle('active', motion.action === button.dataset.action || (button.dataset.action === 'fall' && motion.lying));

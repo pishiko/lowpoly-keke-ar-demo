@@ -20,7 +20,7 @@
       <video id="camera-feed" autoplay muted playsinline hidden></video>
       <div id="loading" role="status">ケケをお迎えしています…</div>
     </div>
-    <div id="overlay">
+    <div id="overlay" data-hud="full">
       <header class="topbar">
         <a class="brand" href="./" aria-label="KEKE POCKET ホーム"><span class="brand-mark">k<span>•</span></span><span>keke<span class="brand-sub">POCKET</span></span></a>
         <nav class="modes" aria-label="撮影モード">
@@ -28,8 +28,13 @@
           <button id="camera-mode" aria-pressed="false"><span class="tiny-dot"></span>カメラ</button>
           <button id="ar-mode" aria-pressed="false">床に置く AR</button>
         </nav>
-        <div class="top-tools"><button id="install" class="icon-button" aria-label="アプリをインストール" title="アプリをインストール">＋</button><button id="help" class="icon-button" aria-label="使い方" title="使い方">?</button></div>
+        <div class="top-tools"><button id="hud-toggle" class="hud-toggle" aria-label="HUDを最小化" aria-pressed="false" title="HUDを最小化（Hキー）"><span data-icon="frame"></span><span>HUD最小</span></button><button id="install" class="icon-button" aria-label="アプリをインストール" title="アプリをインストール">＋</button><button id="help" class="icon-button" aria-label="使い方" title="使い方">?</button></div>
       </header>
+      <nav id="hud-tools" aria-label="撮影中の表示と操作" hidden>
+        <button id="hud-recall" aria-label="ケケを呼び戻す" title="呼び戻す"><span data-icon="home"></span></button>
+        <button id="hud-hide" title="戻すボタンだけを残します">HUDを隠す</button>
+        <button id="hud-restore" aria-label="通常の操作画面に戻す" title="操作を戻す（H / Escキー）"><span data-icon="frame"></span><span>操作を戻す</span></button>
+      </nav>
       <section class="intro">
         <div class="eyebrow"><span class="live-dot"></span> A LITTLE FRIEND, ANYWHERE</div>
         <h1>いつもの景色に、<br>ケケをひとり。</h1>
@@ -60,10 +65,10 @@
         <section class="actions" aria-label="アクション">
           <div class="actions-heading">ちょっと、あそぼう。<span>TOUCH & PLAY</span></div>
           <div class="action-buttons">
-            <button data-action="squish" disabled><span data-icon="squish"></span><span>ぷにっ</span><kbd>1</kbd></button>
-            <button data-action="jump" disabled><span data-icon="jump"></span><span>ジャンプ</span><kbd>2</kbd></button>
-            <button data-action="fall" disabled><span data-icon="fall"></span><span id="fall-label">ころん</span><kbd>3</kbd></button>
-            <button data-action="spin" disabled><span data-icon="spin"></span><span>くるり</span><kbd>4</kbd></button>
+            <button data-action="squish" aria-label="ぷにっ" title="ぷにっ" disabled><span data-icon="squish"></span><span>ぷにっ</span><kbd>1</kbd></button>
+            <button data-action="jump" aria-label="ジャンプ" title="ジャンプ" disabled><span data-icon="jump"></span><span>ジャンプ</span><kbd>2</kbd></button>
+            <button data-action="fall" aria-label="ころん" title="ころん" disabled><span data-icon="fall"></span><span id="fall-label">ころん</span><kbd>3</kbd></button>
+            <button data-action="spin" aria-label="くるり" title="くるり" disabled><span data-icon="spin"></span><span>くるり</span><kbd>4</kbd></button>
           </div>
         </section>
       </footer>
@@ -79,7 +84,9 @@
         <div class="dialog-heading"><span>ケケとのあそびかた</span><button class="icon-button" data-close aria-label="閉じる">×</button></div>
         <p>「カメラ」でいつもの景色にケケを重ね、丸いシャッターで撮影。写真を保存・共有できます。</p>
         <ul><li>スティック / WASD / 矢印キーで前後左右へ。画面の外にも歩いていきます。</li><li>ケケをタップするとぷにっ。1〜4キーでもアクション、Spaceでジャンプ。</li><li>「ころん」で寝ころんだら、「おきる」で起こしてあげてください。</li><li>見失ったら「呼び戻す」。サイズも自由に変えられます。</li><li>ゲームパッド：左スティックで移動、Aでジャンプ、Bでぷにっ、Xでころん、Yでくるり。</li></ul>
-        <p>「床に置く AR」は対応端末で床を認識し、その場所にケケを置きます。このモードの撮影は端末のスクリーンショットを使ってください。</p>
+        <p>「床に置く AR」は対応端末で床を認識し、その場所にケケを置きます。動画は端末の画面録画、写真はスクリーンショットを使ってください。</p>
+        <p>画面録画の前に「HUD最小」を押すと、小さなスティックとアクションだけで操作できます。「HUDを隠す」で戻すボタン以外を非表示にできます。隠している間もキーボード・ゲームパッドで操作でき、「操作を戻す」またはEscキーで通常表示に戻ります。Hキーでも表示を切り替えられます。ARの床配置案内は配置が終わるまで表示します。</p>
+        <p class="fine-print">HUDの切替は録画開始ボタンではありません。動画はスマホの画面録画機能で撮影してください。</p>
         <p id="install-help">アプリとして使うには、ブラウザのメニューから「ホーム画面に追加」または「アプリをインストール」を選んでください。iPhoneではSafariの共有メニューから追加できます。</p>
         <p class="fine-print">カメラ・AR・インストールはHTTPS（開発時はlocalhost）で利用できます。カメラモードは映像への合成で、床の位置追跡は行いません。</p>
       </dialog>
